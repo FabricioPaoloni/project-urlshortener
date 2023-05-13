@@ -2,10 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const dns = require('node:dns');
-const { urlToHttpOptions } = require('node:url');
+// const { urlToHttpOptions } = require('node:url');
 const bodyParser = require('body-parser');
 const validUrl = require('valid-url');
+// const AutoIncrement = require('mongoose-sequence')(mongoose);
 const app = express();
 
 // Basic Configuration
@@ -46,9 +46,32 @@ connection.once('open', () => {
 //create the schema for the url database
 const urlSchema = new mongoose.Schema({
   original_url: String,
+  short_url: Number
 })
 
+const counterSchema = new mongoose.Schema({
+  _id: String,
+  sequence_value: Number
+})
+
+
 const URL = mongoose.model('URL', urlSchema);
+
+const counter = mongoose.model('counter', counterSchema, 'counters');
+
+async function getNextSequenceValue(sequenceName) {
+  let sequenceDocument = await counter.findOneAndUpdate(
+    {_id: sequenceName},
+    {$inc:{sequence_value:1}},
+    {new: true}
+  );
+  return sequenceDocument.sequence_value;
+}
+
+
+
+
+
 
 app.post('/api/shorturl', async function (req, res) {
 
@@ -68,24 +91,20 @@ app.post('/api/shorturl', async function (req, res) {
     if (findUrl) { //if it was created before, return the data
       res.json({
         original_url: findUrl.original_url,
-        short_url: findUrl._id
+        short_url: findUrl.short_url
       })
     } else {//if it was not created, we create a new record with the url
+
       findUrl = new URL({
-        original_url: urlInput
+        original_url: urlInput,
+        short_url: await getNextSequenceValue('short-url')
       })
 
-      await findUrl.save()
-        .then( (data) => {
-          res.json({
-            original_url: data.original_url,
-            short_url: data._id
-          })
-        })
-        .catch( (err) => {
-          console.error(err);
-          res.json({ error: 'An error has ocurred on saving' });
-        })
+      findUrl.save()
+      res.json({
+            original_url: findUrl.original_url,
+            short_url: findUrl.short_url
+      })
     }
   }
 
@@ -98,7 +117,7 @@ app.post('/api/shorturl', async function (req, res) {
 
 app.get('/api/shorturl/:short_url?', async function (req, res) {
   try {
-    let findShortUrl = await URL.findById(req.params.short_url)
+    let findShortUrl = await URL.findOne({ short_url: req.params.short_url })
       
     if (findShortUrl){
       res.redirect(findShortUrl.original_url);
