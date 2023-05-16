@@ -22,8 +22,8 @@ Use "npm install" in the terminal to get the needed packages specified in packag
 
 Use "npm run start" in the terminal to run the program locally. Yo can acces it in http://localhost/3000
 You will see a basic front end with a form to POST urls. If the url is valid, the program tries to find that url in order to return the data asociated, if is not found (there is no document with the introduced url) it will create a new document in the db and return that url with its short_url assigned automatically (using the counters collection, explained above, and the getNextSequenceValue function). 
-Also, there is an API that redirects to a selected URL by using the short_url auto-assigned the first time a URL was introduced in the form mentioned above. The pipeline of this API is ".../api/short_url/<short_url_number>" (e.g: if you're testing the program locally, the pipeline will be "localhost:3000/api/short_url/<short_url_number>); you must replace <short_url_number> with a number.
-For example: "localhost:3000/api/short_url/1"
+Also, there is an API that redirects to a selected URL by using the short_url auto-assigned the first time a URL was introduced in the form mentioned above. The pipeline of this API is ".../api/shorturl/<short_url_number>" (e.g: if you're testing the program locally, the pipeline will be "localhost:3000/api/shorturl/<short_url_number>); you must replace <short_url_number> with a number.
+For example: "localhost:3000/api/shorturl/1"
 
 
 
