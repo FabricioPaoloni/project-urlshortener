@@ -49,6 +49,7 @@ const urlSchema = new mongoose.Schema({
   short_url: Number
 })
 
+//Define the schema used to query and update the sequence value for each short_url
 const counterSchema = new mongoose.Schema({
   _id: String,
   sequence_value: Number
