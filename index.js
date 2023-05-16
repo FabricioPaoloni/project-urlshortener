@@ -80,8 +80,8 @@ app.post('/api/shorturl', async function (req, res) {
 
   //if dns doesn't exists, return an error, else continue the program
   if (!validUrl.isWebUri(urlInput)) {
-    res.status(401).json({
-      error: "invalid URL"
+    res.json({
+      error: "invalid url"
     })
   }
 
